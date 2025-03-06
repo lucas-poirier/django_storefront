@@ -8,7 +8,12 @@ from .forms import RegisterForm
 
 def product_list(request):
     products = Product.objects.all()
-    return render(request, 'shop/product_list.html', {'products': products})
+    if request.user.is_authenticated:
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart_items = cart.items.all()
+    else:
+        cart_items = []
+    return render(request, 'shop/product_list.html', {'products': products, 'cart_items': cart_items})
 
 def register(request):
     if request.method == "POST":
@@ -40,6 +45,20 @@ def add_to_cart(request, product_id):
     return redirect("product_list")
 
 @login_required
+def remove_one_from_cart(request, product_id):
+    cart = get_object_or_404(Cart, user=request.user)
+    cart_item = CartItem.objects.filter(cart=cart, product_id=product_id).first()
+
+    if cart_item:
+        cart_item.quantity -= 1
+        if cart_item.quantity <= 0:
+            cart_item.delete()
+        else:
+            cart_item.save()
+
+    return redirect("product_list")
+
+@login_required
 def remove_from_cart(request, product_id):
     cart = get_object_or_404(Cart, user=request.user)
     cart_item = CartItem.objects.filter(cart=cart, product_id=product_id).first()
@@ -47,9 +66,14 @@ def remove_from_cart(request, product_id):
     if cart_item:
         cart_item.delete()
 
-    return redirect("product_list")
+    return redirect("cart_detail")
 
 @login_required
 def cart_detail(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
     return render(request, "cart/cart_detail.html", {"cart": cart})
+
+def buy(request):
+    cart = get_object_or_404(Cart, user=request.user)
+    cart_items = cart.items.all().delete()
+    return render(request, "cart/buy.html")

@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 
+{% load static %}
+
     {% if user.is_authenticated %}
         <h3>Welcome, {{ user.username }}!</h3>
     {% else %}
@@ -13,9 +15,22 @@
         <div>
             <h3>{{ product.name }}</h3>
             <p>{{ product.description }}</p>
-            <p>Price: ${{ product.price }}</p>
-            <a href="{% url 'add_to_cart' product.id %}">Add to Cart</a>
-            <a href="{% url 'remove_from_cart' product.id %}">Remove from Cart</a>
+            <p>${{ product.price }}
+            <a href="{% url 'remove_one_from_cart' product.id %}" class=""btn btn-primary">
+                <img src=" {% static 'images/button-minus-icon.png' %}" alt="Remove from Cart" style="width: 30px; height: 30px;">
+            </a>
+            {% for cart_item in cart_items %}
+                {% if cart_item.product == product %}
+                    {% if cart_item.quantity > 0 %}
+                        <span>{{ cart_item.quantity }}</span>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            <a href="{% url 'add_to_cart' product.id %}" class=""btn btn-primary">
+                <img src=" {% static 'images/button-plus-icon.png' %}" alt="Add to Cart" style="width: 30px; height: 30px;">
+            </a>
+        </p>
+
         </div>
     {% endfor %}
     
