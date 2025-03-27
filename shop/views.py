@@ -39,7 +39,7 @@ def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart, created = Cart.objects.get_or_create(user=request.user)
     cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-    if not created:
+    if not created and cart_item.quantity < product.stock:
         cart_item.quantity += 1
         cart_item.save()
     return redirect("product_list")
@@ -75,5 +75,10 @@ def cart_detail(request):
 
 def buy(request):
     cart = get_object_or_404(Cart, user=request.user)
-    cart_items = cart.items.all().delete()
+    cart_items = cart.items.all()
+    for cart_item in cart_items:
+        product = cart_item.product
+        product.stock -= cart_item.quantity
+        product.save()
+        cart_item.delete()
     return render(request, "cart/buy.html")

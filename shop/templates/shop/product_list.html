@@ -3,35 +3,56 @@
 
 {% load static %}
 
-    {% if user.is_authenticated %}
-        <h3>Welcome, {{ user.username }}!</h3>
-    {% else %}
-        <h3>Welcome, guest.</h3>
-    {% endif %}
+{% if user.is_authenticated %}
+<h3>Welcome, {{ user.username }}!</h3>
+{% else %}
+<h3>Welcome, guest.</h3>
+{% endif %}
 
-    <h2>Products</h2>
-    
-    {% for product in products %}
-        <div>
-            <h3>{{ product.name }}</h3>
-            <p>{{ product.description }}</p>
-            <p>${{ product.price }}
-            <a href="{% url 'remove_one_from_cart' product.id %}" class=""btn btn-primary">
-                <img src=" {% static 'images/button-minus-icon.png' %}" alt="Remove from Cart" style="width: 30px; height: 30px;">
-            </a>
-            {% for cart_item in cart_items %}
-                {% if cart_item.product == product %}
-                    {% if cart_item.quantity > 0 %}
-                        <span>{{ cart_item.quantity }}</span>
+<h2>Products</h2>
+
+<div class="container">
+    <div class="row">
+        {% for product in products %}
+            <div class="col-md-6 mb-4">
+                <div class="product-block">
+                <h3>{{ product.name }}</h3>
+                <p>{{ product.description }}</p>
+                <p> {% if product.stock < 5 %} 
+                        {% if product.stock == 0 %} 
+                            <span style="color: red;">Out of stock!</span>
+                        {% else %}
+                            <span style="color: red;">Only {{ product.stock }} left in stock!</span>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
-            {% endfor %}
-            <a href="{% url 'add_to_cart' product.id %}" class=""btn btn-primary">
-                <img src=" {% static 'images/button-plus-icon.png' %}" alt="Add to Cart" style="width: 30px; height: 30px;">
-            </a>
-        </p>
+                </p>
+                {% if product.stock > 0 %}
+                <p>${{ product.price }}
 
-        </div>
-    {% endfor %}
-    
+                        <a href="{% url 'remove_one_from_cart' product.id %}">
+                            <img src=" {% static 'images/button-minus-icon.png' %}" alt="Remove from Cart"
+                                    style="width: 30px; height: 30px;">
+                        </a>
+                        {% for cart_item in cart_items %}
+                            {% if cart_item.product == product %}
+                                {% if cart_item.quantity > 0 %}
+                                    <span>{{ cart_item.quantity }}</span>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        <a href="{% url 'add_to_cart' product.id %}">
+                            <img src=" {% static 'images/button-plus-icon.png' %}" alt="Add to Cart"
+                                    style="width: 30px; height: 30px;">
+                        </a>
+
+                </p>
+                {% endif %}
+            </div>
+
+
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
 {% endblock %}
