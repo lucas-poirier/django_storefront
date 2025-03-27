@@ -81,4 +81,5 @@ def buy(request):
         product.stock -= cart_item.quantity
         product.save()
         cart_item.delete()
+
     return render(request, "cart/buy.html")
