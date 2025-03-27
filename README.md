@@ -13,14 +13,10 @@ source venv/bin/activate
 ## Set up the database
 `python manage.py migrate`
 
-## Load database data
-`python manage.py loaddata data.json`
+## Create an admin account
+`python manage.py createsuperuser`
 
 ## Run the development server
 `python manage.py runserver`
 
 The server should start running at `http://127.0.0.1:8000`
-  
-You can log in using the admin account.
-username = admin
-password=admin
