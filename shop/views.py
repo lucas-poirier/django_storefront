@@ -76,10 +76,20 @@ def cart_detail(request):
 def buy(request):
     cart = get_object_or_404(Cart, user=request.user)
     cart_items = cart.items.all()
+    missing_items = []
     for cart_item in cart_items:
         product = cart_item.product
-        product.stock -= cart_item.quantity
-        product.save()
-        cart_item.delete()
+        if product.stock < cart_item.quantity:
+            missing_items.append(product)
+            cart_item.delete()
+            
+        else:
+            product.stock -= cart_item.quantity
+            product.save()
 
-    return render(request, "cart/buy.html")
+
+    if missing_items:
+        return render(request, "cart/buy.html", {"missing_items": missing_items})
+    else:
+        cart.delete()
+        return render(request, "cart/buy.html")

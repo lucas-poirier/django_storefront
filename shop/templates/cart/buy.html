@@ -1,11 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>Thank your for your purchase!</h3>
-
-<script>
-    setTimeout(function() {
-        window.location.href = "{% url 'product_list' %}";
-    }, 2000);
-</script>
+    {% if missing_items %}
+        <h3 style="color: red;">The following items have insufficient stock:</h3>
+        {% for item in missing_items %}
+            <p style="color: red;">{{ item.name }}</p>
+        {% endfor %}
+    {%else%}
+        <h3 style="color: green">Thank your for your purchase!</h3>
+    {% endif %}
+<!-- 
+    <script>
+        setTimeout(function() {
+            window.location.href = "{% url 'product_list' %}";
+        }, 2000);
+    </script> -->
 {% endblock %}

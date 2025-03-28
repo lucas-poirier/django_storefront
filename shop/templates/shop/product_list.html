@@ -9,25 +9,25 @@
 <h3>Welcome, guest.</h3>
 {% endif %}
 
-<h2>Products</h2>
+<h3>Products</h3>
 
 <div class="container">
     <div class="row">
         {% for product in products %}
             <div class="col-md-6 mb-4">
                 <div class="product-block">
-                <h3>{{ product.name }}</h3>
+                <h4>{{ product.name }}</h4>
                 <p>{{ product.description }}</p>
-                <p> {% if product.stock < 5 %} 
+                <p id="stock-{{product.id}}"> {% if product.stock < 5 %} 
                         {% if product.stock == 0 %} 
-                            <span style="color: red;">Out of stock!</span>
+                            <span id="stock-status-{{product.id}}" style="color: red;">Out of stock!</span>
                         {% else %}
-                            <span style="color: red;">Only {{ product.stock }} left in stock!</span>
+                            <span id="stock-status-{{product.id}}" style="color: red;">Only {{ product.stock }} left in stock!</span>
                         {% endif %}
                     {% endif %}
                 </p>
                 {% if product.stock > 0 %}
-                <p>${{ product.price }}
+                <p id="stock-price-{{product.id}}">${{ product.price }}
 
                         <a href="{% url 'remove_one_from_cart' product.id %}">
                             <img src=" {% static 'images/button-minus-icon.png' %}" alt="Remove from Cart"
@@ -54,5 +54,46 @@
         {% endfor %}
     </div>
 </div>
+
+<!-- <script>
+    setTimeout(function() {
+        location.reload();
+    }, 1000);
+</script> -->
+
+<script>
+    let socket = new WebSocket("ws://127.0.0.1:8000/ws/stock/");
+
+    socket.onmessage = function(event) {
+        let data = JSON.parse(event.data);
+
+        if (data.hasOwnProperty('id') && data.hasOwnProperty('stock')){
+            location.reload();
+        }
+
+        // let productElement = document.getElementById(`stock-${data.id}`);
+        // if (productElement) {
+        // let stockStatusElement = document.getElementById(`stock-status-${data.id}`);
+        // // let stockPriceElement = document.getElementById(`price-${data.id}`);
+        
+        // // Update the stock status message based on the new stock value
+        // if (data.stock == 0) {
+        //     stockStatusElement.textContent = "Out of stock!";
+        //     stockStatusElement.style.color = "red";
+        //     // stockPriceElement.textContent = "";
+        // } else if (data.stock < 5) {
+        //     stockStatusElement.textContent = `Only ${data.stock} left in stock!`;
+        //     stockStatusElement.style.color = "red";
+        // } else {
+        //     stockStatusElement.textContent = "";
+        // }
+        // Update the stock value in the HTML
+    // }
+    };
+
+    socket.onclose = function(event) {
+        console.error("WebSocket closed unexpectedly");
+    };
+</script>
 
 {% endblock %}
