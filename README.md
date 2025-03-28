@@ -17,6 +17,6 @@ source venv/bin/activate
 `python manage.py createsuperuser`
 
 ## Run the development server
-`daphne -b 127.0.0.1 -p 8000 storefront.asgi:application`
+`daphne -b 127.0.0.1 -p 8000 django_storefront.asgi:application`
 
 The server should start running at `http://127.0.0.1:8000`
