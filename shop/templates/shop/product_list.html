@@ -62,7 +62,8 @@
 </script> -->
 
 <script>
-    let socket = new WebSocket("ws://127.0.0.1:8000/ws/stock/");
+    // allows the ws to connect to any host
+    let socket = new WebSocket("ws://" + window.location.hostname + ":8000/ws/stock/");
 
     socket.onmessage = function(event) {
         let data = JSON.parse(event.data);
